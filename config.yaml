@@ -1,0 +1,10 @@
+# Must include at least one filename
+
+FILENAME: E:/Subject_4_event_7_base.edf
+#FILENAME: C:/Users/Chancelor/Desktop/BoYuan/SEEG/Demo/S1_ictal.edf
+FILENAME_COMPARE: Null # you can input the compare file later in the app
+CHANNELS:
+  CHANNEL_POLICY: all # or "part"
+  CHANNEL_NAMES: Null # specify exact names of the channels if you choose part for the channel_policy
+
+
