@@ -4,10 +4,11 @@ from tornado.ioloop import IOLoop
 import numpy as np
 import mne
 import yaml
+from .source_utils import FrequencyAnalysis as fa
 from .source_utils import RawDF, SpectrumDF, FrequencyAnalysis
 from .bp_utils import stackc_tick_loc, stack_x_axis_times, stack_y_axis_signals, convolve_multichannel
 from bokeh.embed import server_document
-from bokeh.layouts import column
+from bokeh.layouts import column, row
 from bokeh.models import ColumnDataSource, Slider, Select, RangeSlider, TextInput, MultiChoice
 from bokeh.plotting import figure
 from bokeh.server.server import Server
@@ -43,6 +44,10 @@ def signal_bkapp(doc):
     start_slider = Slider(value=0, start=0, end=raw_edf.raw.get_data().shape[1] - 10000, step=5000, width=900, title='Start From')
     smooth_slider = Slider(value=0, start=0, end=1000, step=10, width=900, title='Smooth Window')
     multi_choice = MultiChoice(value=list(raw_edf.brain_regions), options=list(raw_edf.brain_regions), title='Brain Regions')
+    highpass_input = TextInput(title='Highpass Filter:', value='None')
+    lowpass_input = TextInput(title='Lowpass Filter:', value='None')
+    bandpass_input = TextInput(title='Bandpass Filter:', value='None')
+    notch_input = TextInput(title='Notch Filter:', value='None')
 
     file_input = TextInput(title='Compare File:', value='Default')
 
@@ -53,6 +58,10 @@ def signal_bkapp(doc):
         start_update = start_slider.value
         kernel_size_update = smooth_slider.value
         multi_choice_update = multi_choice.value
+        highpass_update = highpass_input.value
+        lowpass_update = lowpass_input.value
+        bandpass_update = bandpass_input.value
+        notch_update = notch_input.value
 
         if kernel_size_update == 0:
             kernel = [-1, -1]
@@ -65,22 +74,62 @@ def signal_bkapp(doc):
             raw_noba = raw_edf.raw
             chan_noba, data_noba = raw_edf.filter_data_from_region(multi_choice_update)
 
-
         ch_num = len(chan_base)
-        y_base_convolved = convolve_multichannel(
+        y_base_filted = convolve_multichannel(
             data_base[0:ch_num, start_update + range_update[0]:start_update + range_update[1]],
             kernel, 0)
-        y_pain_convolved = convolve_multichannel(
+        y_noba_filted = convolve_multichannel(
             data_noba[0:ch_num, start_update + range_update[0]:start_update + range_update[1]],
             kernel, 0)
+
+
+        if highpass_update != 'None':
+            try:
+                cutoff = float(highpass_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.butter_highpass_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.butter_highpass_filter(y_noba_filted, cutoff, raw_edf.freq)
+            print(y_noba_filted[0][0])
+
+        else:
+            pass
+
+
+        if lowpass_update != 'None':
+            try:
+                cutoff = float(lowpass_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.butter_lowpass_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.butter_lowpass_filter(y_noba_filted, cutoff, raw_edf.freq)
+            print(y_noba_filted[0][0])
+        else:
+            pass
+
+
+        if notch_update != 'None':
+            try:
+                cutoff = float(notch_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.notch_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.notch_filter(y_noba_filted, cutoff, raw_edf.freq)
+            print(y_noba_filted[0][0])
+        else:
+            pass
+
 
         source.data = dict(
             x_base=stack_x_axis_times(raw_base.times[start_update + range_update[0]:start_update + range_update[1]],
                                       ch_num),
-            y_base=stack_y_axis_signals(y_base_convolved, ch_num, offset_update),
+            y_base=stack_y_axis_signals(y_base_filted, ch_num, offset_update),
             x_pain=stack_x_axis_times(raw_noba.times[start_update + range_update[0]:start_update + range_update[1]],
                                       ch_num),
-            y_pain=stack_y_axis_signals(y_pain_convolved, ch_num, offset_update))
+            y_pain=stack_y_axis_signals(y_noba_filted, ch_num, offset_update))
 
         y_tick_loc = stackc_tick_loc(data_base, ch_num, offset)
         y_tick_labels = chan_base
@@ -88,14 +137,15 @@ def signal_bkapp(doc):
         p.yaxis.ticker = y_tick_loc
         p.yaxis.major_label_overrides = y_tick_dict
 
-    for w in [file_input, multi_choice]:
+    for w in [file_input, multi_choice, highpass_input, lowpass_input, notch_input]:
         w.on_change('value', update_data)
     for w in [range_slider, offset_slider, smooth_slider, start_slider]:
         w.on_change('value_throttled', update_data)
 
-    inputs = column(file_input, range_slider, start_slider, smooth_slider, offset_slider, multi_choice)
+    inputs = column(file_input, range_slider, start_slider, smooth_slider, offset_slider, multi_choice,
+                    row(highpass_input, lowpass_input, notch_input))
 
-    doc.add_root(column(inputs, p))
+    doc.add_root(row(inputs, p))
 
 bp = Blueprint("signal checker", __name__, url_prefix='/signal')
 

@@ -34,8 +34,20 @@ class FrequencyAnalysis():
         :return: filtered signal
         '''
         normal_cutoff = 2 * cutoff / fs
-        b, a = signal.butter(order, normal_cutoff, fs=fs, btype='low', analog=False)
-        y = signal.filtfilt(b, a, data)
+        b, a = signal.butter(order, normal_cutoff, btype='low', analog=False)
+
+        if isinstance(data, pd.DataFrame):
+            y = np.zeros((data.shape[0], data.shape[1]))
+            for i in range(data.shape[1]):
+                y[:, i] = signal.filtfilt(b, a, data.iloc[:, i])
+
+            y = pd.DataFrame(data=y, columns=data.columns)
+
+        elif isinstance(data, np.ndarray):
+            y = np.zeros((data.shape[0], data.shape[1]))
+            for i in range(data.shape[0]):
+                y[i] = signal.filtfilt(b, a, data[i])
+
         return y
 
     @classmethod
@@ -61,7 +73,7 @@ class FrequencyAnalysis():
         elif isinstance(data, np.ndarray):
             y = np.zeros((data.shape[0], data.shape[1]))
             for i in range(data.shape[0]):
-                y[i] = signal.filtfilt(b, a, data.iloc[i])
+                y[i] = signal.filtfilt(b, a, data[i])
 
         return y
 
@@ -121,6 +133,18 @@ class FrequencyAnalysis():
                 np.seterr(divide='warn')
 
             den = pd.DataFrame(data=den, columns=data.columns)
+            return [fseq, den]
+
+        if isinstance(data, np.ndarray):
+            den = np.zeros((data.shape[0], len))
+            for i in range(data.shape[0]):
+                fseq, den[i] = signal.welch(data[i], smp_freq, nperseg=nperseg)
+
+            if log:
+                np.seterr(divide='ignore')
+                den = np.log10(den)
+                np.seterr(divide='warn')
+
             return [fseq, den]
 
     @classmethod

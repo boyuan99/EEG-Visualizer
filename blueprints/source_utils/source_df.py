@@ -242,6 +242,16 @@ class SpectrumDF(RawDF):
 
         return dict_df_regions_signals
 
-if __name__ == '__main__':
-    df = RawDF(filename='E:/Subject_4_event_7_base.edf')
+# if __name__ == '__main__':
+#     from frequency_analysis import FrequencyAnalysis as fa
+#     import matplotlib.pyplot as plt
+#     df = RawDF(filename='E:/Subject_4_event_7_base.edf')
+#     data = df.raw.get_data()[:10]
+#     tmp = fa.butter_highpass_filter(data, 1, 1024)
+#     tmp1 = fa.notch_filter(tmp, 60, 1024)
+#     fs, den = fa.data_filted_to_den(tmp1, 2561, 1024)
+
+
+
+
 
