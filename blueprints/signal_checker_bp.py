@@ -91,7 +91,6 @@ def signal_bkapp(doc):
 
             y_base_filted = fa.butter_highpass_filter(y_base_filted, cutoff, raw_edf.freq)
             y_noba_filted = fa.butter_highpass_filter(y_noba_filted, cutoff, raw_edf.freq)
-            print(y_noba_filted[0][0])
 
         else:
             pass
@@ -105,7 +104,6 @@ def signal_bkapp(doc):
 
             y_base_filted = fa.butter_lowpass_filter(y_base_filted, cutoff, raw_edf.freq)
             y_noba_filted = fa.butter_lowpass_filter(y_noba_filted, cutoff, raw_edf.freq)
-            print(y_noba_filted[0][0])
         else:
             pass
 
@@ -118,7 +116,6 @@ def signal_bkapp(doc):
 
             y_base_filted = fa.notch_filter(y_base_filted, cutoff, raw_edf.freq)
             y_noba_filted = fa.notch_filter(y_noba_filted, cutoff, raw_edf.freq)
-            print(y_noba_filted[0][0])
         else:
             pass
 
