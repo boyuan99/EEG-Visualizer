@@ -2,6 +2,7 @@
 
 FILENAME: your file path and name
 FILENAME_COMPARE: Null # you can input the compare file later in the app
+OFFSET: 0.0002
 CHANNELS:
   CHANNEL_POLICY: all # or "part"
   CHANNEL_NAMES: Null # specify exact names of the channels if you choose part for the channel_policy

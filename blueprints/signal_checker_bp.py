@@ -23,7 +23,7 @@ def signal_bkapp(doc):
     # print(os.listdir('./'))
 
     raw_edf = RawDF(filename=config['FILENAME'])
-    offset = 0.0001
+    offset = config['OFFSET']
     ch_num = raw_edf.nchan
     p = figure(height=900, width=900, title="sEEG Visualization")
     source = ColumnDataSource(data=dict(x_base=stack_x_axis_times(raw_edf.raw.times[:3000], ch_num),
@@ -40,7 +40,7 @@ def signal_bkapp(doc):
     p.legend.click_policy = "hide"
 
     range_slider = RangeSlider(start=0, end=10000, value=(0, 3000), step=500, width=900, title="Range Slider")
-    offset_slider = Slider(value=0.0001, start=0, end=0.002, step=0.0001, width=900, title='Offset')
+    offset_slider = Slider(value=offset, start=0, end=0.002, step=0.0001, width=900, title='Offset', format='0.00000')
     start_slider = Slider(value=0, start=0, end=raw_edf.raw.get_data().shape[1] - 10000, step=5000, width=900, title='Start From')
     smooth_slider = Slider(value=0, start=0, end=1000, step=10, width=900, title='Smooth Window')
     multi_choice = MultiChoice(value=list(raw_edf.brain_regions), options=list(raw_edf.brain_regions), title='Brain Regions')
@@ -50,6 +50,8 @@ def signal_bkapp(doc):
     notch_input = TextInput(title='Notch Filter:', value='None')
 
     file_input = TextInput(title='Compare File:', value='Default')
+
+    file_bank = dict()
 
     def update_data(attribute, old, new):
         range_update = range_slider.value
@@ -73,6 +75,19 @@ def signal_bkapp(doc):
             chan_base, data_base = raw_edf.filter_data_from_region(multi_choice_update)
             raw_noba = raw_edf.raw
             chan_noba, data_noba = raw_edf.filter_data_from_region(multi_choice_update)
+
+        else:
+            if file_update in file_bank.keys():
+                raw_base = raw_edf.raw
+                chan_base, data_base = raw_edf.filter_data_from_region(multi_choice_update)
+                raw_noba, chan_noba, data_noba = file_bank[file_update]
+            else:
+                raw_compare_update = RawDF(filename=file_update)
+                raw_base = raw_edf.raw
+                chan_base, data_base = raw_edf.filter_data_from_region(multi_choice_update)
+                raw_noba = raw_compare_update.raw
+                chan_noba, data_noba = raw_compare_update.filter_data_from_region(multi_choice_update)
+                file_bank[file_update] = [raw_noba, chan_noba, data_noba]
 
         ch_num = len(chan_base)
         y_base_filted = convolve_multichannel(
