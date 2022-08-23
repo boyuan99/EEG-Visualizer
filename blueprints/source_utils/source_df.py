@@ -3,7 +3,7 @@ import mne
 import pandas as pd
 from scipy import signal
 from collections import OrderedDict
-from frequency_analysis import FrequencyAnalysis
+from .frequency_analysis import FrequencyAnalysis
 import re
 
 """Need to implement notch_policy=False"""
