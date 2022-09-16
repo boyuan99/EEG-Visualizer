@@ -1,6 +1,6 @@
 # Must include at least one filename
 
-FILENAME: your file path and name
+FILENAME: ./Demo/S1_ictal.edf
 FILENAME_COMPARE: Null # you can input the compare file later in the app
 OFFSET: 0.0002
 CHANNELS:

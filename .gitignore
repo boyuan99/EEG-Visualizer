@@ -1,6 +1,4 @@
-Demo/**
 *.ipynb
 .DS_Store
-*.edf
 **/__pycache__/**
 .idea/**
