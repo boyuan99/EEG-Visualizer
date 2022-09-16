@@ -1,6 +1,6 @@
 # EEG-Visualizer
 <p align="center">
-  	<img alt="Logo image of EEGVisualizer" src="./images/logo.png" width=80%>
+  	<img alt="Logo image of EEGVisualizer" src="./static/logo.png" width=80%>
 </p>  
 
 

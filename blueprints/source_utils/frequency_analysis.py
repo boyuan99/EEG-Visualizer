@@ -44,9 +44,12 @@ class FrequencyAnalysis():
             y = pd.DataFrame(data=y, columns=data.columns)
 
         elif isinstance(data, np.ndarray):
-            y = np.zeros((data.shape[0], data.shape[1]))
-            for i in range(data.shape[0]):
-                y[i] = signal.filtfilt(b, a, data[i])
+            if len(data.shape)>1:
+                y = np.zeros((data.shape[0], data.shape[1]))
+                for i in range(data.shape[0]):
+                    y[i] = signal.filtfilt(b, a, data[i])
+            else:
+                y = signal.filtfilt(b, a, data)
 
         return y
 
@@ -71,9 +74,12 @@ class FrequencyAnalysis():
             y = pd.DataFrame(data=y, columns=data.columns)
 
         elif isinstance(data, np.ndarray):
-            y = np.zeros((data.shape[0], data.shape[1]))
-            for i in range(data.shape[0]):
-                y[i] = signal.filtfilt(b, a, data[i])
+            if len(data.shape) > 1:
+                y = np.zeros((data.shape[0], data.shape[1]))
+                for i in range(data.shape[0]):
+                    y[i] = signal.filtfilt(b, a, data[i])
+            else:
+                y = signal.filtfilt(b, a, data)
 
         return y
 
@@ -104,9 +110,12 @@ class FrequencyAnalysis():
 
         elif isinstance(data, np.ndarray):
             b_notch, a_notch = signal.iirnotch(notch_freq, quality_factor, smp_fs)
-            y_notched = np.zeros((data.shape[0], data.shape[1]))
-            for i in range(data.shape[0]):
-                y_notched[i] = signal.filtfilt(b_notch, a_notch, data[i])
+            if len(data.shape) > 1:
+                y_notched = np.zeros((data.shape[0], data.shape[1]))
+                for i in range(data.shape[0]):
+                    y_notched[i] = signal.filtfilt(b_notch, a_notch, data[i])
+            else:
+                y_notched = signal.filtfilt(b_notch, a_notch, data)
 
         return y_notched
 

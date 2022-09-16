@@ -14,7 +14,7 @@ app.register_blueprint(spectrum_checker_bp)
 def bk_worker():
     server = Server({'/signal_bkapp': signal_bkapp,
                      '/spectrum_bkapp': spectrum_bkapp},
-                    io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8000"])
+                    io_loop=IOLoop(), allow_websocket_origin=["localhost:8000"])
     server.start()
     server.io_loop.start()
 

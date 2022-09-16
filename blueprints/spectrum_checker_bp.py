@@ -1,66 +1,52 @@
 from flask import render_template, Blueprint
 
 import mne
+import yaml
+import numpy as np
 from scipy import signal
+from .source_utils import FrequencyAnalysis as fa
+from .source_utils import RawDF, SpectrumDF, FrequencyAnalysis
 from bokeh.embed import server_document
 from bokeh.layouts import column, row
-from bokeh.models import ColumnDataSource, Slider, Select, HoverTool
+from bokeh.models import ColumnDataSource, Slider, HoverTool, TextInput
 from bokeh.plotting import figure
 
 
 def spectrum_bkapp(doc):
-    file_base_47 = 'E:/Subject_4_event_7_base.edf'
-    raw_base_47 = mne.io.read_raw_edf(file_base_47)
-    data_base_47 = raw_base_47.get_data()[:48]
+    with open("./config.yaml", 'r') as config_file:
+        config = yaml.safe_load(config_file)
+        config_file.close()
 
-    file_pain_47 = 'E:/Subject_4_event_7_pain.edf'
-    raw_pain_47 = mne.io.read_raw_edf(file_pain_47)
-    data_pain_47 = raw_pain_47.get_data()[:48]
+    log_policy = config['LOG']
+    lowpass_freq = config['LOWPASS']
+    highpass_freq = config['HIGHPASS']
+    notch_freq = config['NOTCH']
+    nperseg = config['NPERSEG']
+    quality_factor = config['QUALITY']
+    order = config['ORDER']
 
-    file_base_42 = 'E:/Subject_4_event_2_base.edf'
-    raw_base_42 = mne.io.read_raw_edf(file_base_42)
-    data_base_42 = raw_base_42.get_data()[:48]
+    raw_edf = SpectrumDF(filename=config['FILENAME'],
+                         lowpass_freq=lowpass_freq,
+                         highpass_freq=highpass_freq,
+                         notch_freq=notch_freq,
+                         nperseg=nperseg,
+                         quality_factor=quality_factor,
+                         order=order,
+                         log=log_policy,)
 
+    fs = raw_edf.raw.info['sfreq']
+    ch_num = raw_edf.nchan
 
-    file_pain_42 = 'E:/Subject_4_event_2_pain.edf'
-    raw_pain_42 = mne.io.read_raw_edf(file_pain_42)
-    data_pain_42 = raw_pain_42.get_data()[:48]
-
-    file_base_46 = 'E:/Subject_4_event_6_base.edf'
-    raw_base_46 = mne.io.read_raw_edf(file_base_46)
-    data_base_46 = raw_base_46.get_data()[:48]
-
-    file_pain_46 = 'E:/Subject_4_event_6_pain.edf'
-    raw_pain_46 = mne.io.read_raw_edf(file_pain_46)
-    data_pain_46 = raw_pain_46.get_data()[:48]
-
-    file_base_48 = 'E:/Subject_4_event_8_base.edf'
-    raw_base_48 = mne.io.read_raw_edf(file_base_48)
-    data_base_48 = raw_base_48.get_data()[:48]
-
-    file_pain_48 = 'E:/Subject_4_event_8_pain.edf'
-    raw_pain_48 = mne.io.read_raw_edf(file_pain_48)
-    data_pain_48 = raw_pain_48.get_data()[:48]
-
-    raw_base = raw_base_47
-    raw_pain = raw_pain_47
-    data_base = data_base_47
-    data_pain = data_pain_47
-
-    fs = raw_base.info['sfreq']
-
-    b_notch, a_notch = signal.iirnotch(60, 30, fs)
-    y_notched_base = signal.filtfilt(b_notch, a_notch, data_base[0])
-    y_notched_pain = signal.filtfilt(b_notch, a_notch, data_pain[0])
-    f_base, den_base = signal.welch(y_notched_base, fs, nperseg=10240)
-    f_pain, den_pain = signal.welch(y_notched_pain, fs, nperseg=10240)
+    fseq = raw_edf.fseq
+    den = raw_edf.den
+    den_array = den.to_numpy().T
 
     source = ColumnDataSource(
         data=dict(
-            x_base=f_base,
-            y_base=den_base,
-            x_pain=f_pain,
-            y_pain=den_pain
+            x_base=fseq,
+            y_base=den_array[0],
+            x_noba=fseq,
+            y_noba=den_array[0]
         )
     )
     hover = HoverTool(
@@ -68,65 +54,114 @@ def spectrum_bkapp(doc):
             ("(x,y)", "($x, $y)"),
         ]
     )
-    p = figure(height=400, width=900)
+    p = figure(height=400, width=900, x_range=(-5, 100))
     p.add_tools(hover)
-    p.line('x_base', 'y_base', source=source, line_color='skyblue', legend_label='base')
-    p.line('x_pain', 'y_pain', source=source, line_color='orange', legend_label='pain')
+    p.line('x_base', 'y_base', source=source, line_width=3, line_color='skyblue', legend_label='base')
+    p.line('x_noba', 'y_noba', source=source, line_width=3, line_color='orange', legend_label='compare')
     p.legend.click_policy = 'hide'
 
+    highpass_input = TextInput(title='Highpass Filter:', value='None')
+    lowpass_input = TextInput(title='Lowpass Filter:', value='None')
+    notch_input = TextInput(title='Notch Filter:', value='None')
+    interval_input = TextInput(title='Time Interval:', value='All')
+    file_input = TextInput(title='Compare File:', value='Default')
+    channel_slider = Slider(value=0, start=0, end=len(den_array), step=1, width=900, title='Channel')
+    current_channel_name = TextInput(title='Current Channel:', value=raw_edf.ch_names[0])
 
-    base_slider = Slider(value=0, start=0, end=47, step=1, width=900, title='Base')
-    pain_slider = Slider(value=0, start=0, end=47, step=1, width=900, title='Pain')
-    file_selector = Select(title="Sample:", value="Subject_4_Event_7", options=["Subject_4_Event_2",
-                                                                                "Subject_4_Event_6",
-                                                                                "Subject_4_Event_7",
-                                                                                "Subject_4_Event_8"])
+    file_bank = dict()
 
     def update_data(attribute, old, new):
-        base_channel_update = base_slider.value
-        pain_channel_update = pain_slider.value
-        file_update = file_selector.value
+        file_update = file_input.value
+        highpass_update = highpass_input.value
+        lowpass_update = lowpass_input.value
+        notch_update = notch_input.value
+        interval_update = interval_input.value
+        channel_update = channel_slider.value
 
-        if file_update == "Subject_4_Event_2":
-            raw_base = raw_base_42
-            raw_pain = raw_pain_42
-            data_base = data_base_42
-            data_pain = data_pain_42
-        elif file_update == "Subject_4_Event_6":
-            raw_base = raw_base_46
-            raw_pain = raw_pain_46
-            data_base = data_base_46
-            data_pain = data_pain_46
-        elif file_update == "Subject_4_Event_7":
-            raw_base = raw_base_47
-            raw_pain = raw_pain_47
-            data_base = data_base_47
-            data_pain = data_pain_47
-        elif file_update == "Subject_4_Event_8":
-            raw_base = raw_base_48
-            raw_pain = raw_pain_48
-            data_base = data_base_48
-            data_pain = data_pain_48
+        if file_update.lower() == "default":
+            raw_base = raw_edf.raw
+            data_base = raw_base.get_data()
+            raw_noba = raw_edf.raw
+            data_noba = raw_noba.get_data()
 
-        fs = raw_base.info['sfreq']
+        else:
+            if file_update in file_bank.keys():
+                raw_base = raw_edf.raw
+                data_base = raw_base.get_data()
+                raw_noba, data_noba = file_bank[file_update]
+            else:
+                raw_noba_update = RawDF(filename=file_update)
+                raw_base = raw_edf.raw
+                data_base = raw_base.get_data()
+                raw_noba = raw_noba_update.raw
+                data_noba = raw_noba.get_data()
+                file_bank[file_update] = [raw_noba, data_noba]
 
-        b_notch, a_notch = signal.iirnotch(60, 30, fs)
-        y_notched_base = signal.filtfilt(b_notch, a_notch, data_base[base_channel_update])
-        y_notched_pain = signal.filtfilt(b_notch, a_notch, data_pain[pain_channel_update])
-        f_base, den_base = signal.welch(y_notched_base, fs, nperseg=10240)
-        f_pain, den_pain = signal.welch(y_notched_pain, fs, nperseg=10240)
+        current_channel_name.value = raw_edf.ch_names[channel_update]
+        if interval_update.lower() == 'all':
+            y_base_filted = data_base[channel_update]
+            y_noba_filted = data_noba[channel_update]
+        else:
+            interval_update = interval_update.split(',')
+            interval_update[0] = int(interval_update[0])
+            interval_update[1] = int(interval_update[1])
+            y_base_filted = data_base[channel_update, interval_update[0]:interval_update[1]+1]
+            y_noba_filted = data_noba[channel_update, interval_update[0]:interval_update[1]+1]
+
+        if highpass_update != 'None':
+            try:
+                cutoff = float(highpass_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.butter_highpass_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.butter_highpass_filter(y_noba_filted, cutoff, raw_edf.freq)
+
+        else:
+            pass
+
+        if lowpass_update != 'None':
+            try:
+                cutoff = float(lowpass_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.butter_lowpass_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.butter_lowpass_filter(y_noba_filted, cutoff, raw_edf.freq)
+        else:
+            pass
+
+        if notch_update != 'None':
+            try:
+                cutoff = float(notch_update)
+            except ValueError:
+                print("Could not convert this input to float!")
+
+            y_base_filted = fa.notch_filter(y_base_filted, cutoff, raw_edf.freq)
+            y_noba_filted = fa.notch_filter(y_noba_filted, cutoff, raw_edf.freq)
+        else:
+            pass
+
+        f_base, den_base = signal.welch(y_base_filted, fs, nperseg=nperseg)
+        f_noba, den_noba = signal.welch(y_noba_filted, fs, nperseg=nperseg)
+
+        np.seterr(divide='ignore')
+        den_base = np.log10(den_base)
+        den_noba = np.log10(den_noba)
+        np.seterr(divide='warn')
 
         source.data = dict(
             x_base=f_base,
             y_base=den_base,
-            x_pain=f_pain,
-            y_pain=den_pain
+            x_noba=f_noba,
+            y_noba=den_noba
         )
 
-    for w in [file_selector, base_slider, pain_slider]:
+    for w in [file_input, interval_input, highpass_input, lowpass_input, notch_input]:
         w.on_change('value', update_data)
+    channel_slider.on_change('value_throttled', update_data)
 
-    inputs = column(file_selector, base_slider, pain_slider)
+    inputs = column(file_input, channel_slider, current_channel_name, row(interval_input, highpass_input, lowpass_input, notch_input, ))
 
     doc.add_root(column(inputs, p))
 

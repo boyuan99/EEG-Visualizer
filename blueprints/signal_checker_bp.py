@@ -28,10 +28,10 @@ def signal_bkapp(doc):
     p = figure(height=900, width=900, title="sEEG Visualization")
     source = ColumnDataSource(data=dict(x_base=stack_x_axis_times(raw_edf.raw.times[:3000], ch_num),
                                         y_base=stack_y_axis_signals(raw_edf.raw.get_data()[:, :3000], ch_num, offset),
-                                        x_pain=stack_x_axis_times(raw_edf.raw.times[:3000], ch_num),
-                                        y_pain=stack_y_axis_signals(raw_edf.raw.get_data()[:, :3000], ch_num, offset),))
+                                        x_noba=stack_x_axis_times(raw_edf.raw.times[:3000], ch_num),
+                                        y_noba=stack_y_axis_signals(raw_edf.raw.get_data()[:, :3000], ch_num, offset),))
     p.multi_line('x_base', 'y_base', source=source, line_color='skyblue', legend_label='base')
-    p.multi_line('x_pain', 'y_pain', source=source, line_color='orange', legend_label='pain')
+    p.multi_line('x_noba', 'y_noba', source=source, line_color='orange', legend_label='compare')
     y_tick_loc = stackc_tick_loc(raw_edf.raw.get_data(), ch_num, offset)
     y_tick_labels = raw_edf.ch_names
     y_tick_dict = dict(zip(y_tick_loc, y_tick_labels))
@@ -46,7 +46,6 @@ def signal_bkapp(doc):
     multi_choice = MultiChoice(value=list(raw_edf.brain_regions), options=list(raw_edf.brain_regions), title='Brain Regions')
     highpass_input = TextInput(title='Highpass Filter:', value='None')
     lowpass_input = TextInput(title='Lowpass Filter:', value='None')
-    bandpass_input = TextInput(title='Bandpass Filter:', value='None')
     notch_input = TextInput(title='Notch Filter:', value='None')
 
     file_input = TextInput(title='Compare File:', value='Default')
@@ -62,7 +61,6 @@ def signal_bkapp(doc):
         multi_choice_update = multi_choice.value
         highpass_update = highpass_input.value
         lowpass_update = lowpass_input.value
-        bandpass_update = bandpass_input.value
         notch_update = notch_input.value
 
         if kernel_size_update == 0:
@@ -97,7 +95,6 @@ def signal_bkapp(doc):
             data_noba[0:ch_num, start_update + range_update[0]:start_update + range_update[1]],
             kernel, 0)
 
-
         if highpass_update != 'None':
             try:
                 cutoff = float(highpass_update)
@@ -110,7 +107,6 @@ def signal_bkapp(doc):
         else:
             pass
 
-
         if lowpass_update != 'None':
             try:
                 cutoff = float(lowpass_update)
@@ -121,7 +117,6 @@ def signal_bkapp(doc):
             y_noba_filted = fa.butter_lowpass_filter(y_noba_filted, cutoff, raw_edf.freq)
         else:
             pass
-
 
         if notch_update != 'None':
             try:
@@ -134,14 +129,13 @@ def signal_bkapp(doc):
         else:
             pass
 
-
         source.data = dict(
             x_base=stack_x_axis_times(raw_base.times[start_update + range_update[0]:start_update + range_update[1]],
                                       ch_num),
             y_base=stack_y_axis_signals(y_base_filted, ch_num, offset_update),
-            x_pain=stack_x_axis_times(raw_noba.times[start_update + range_update[0]:start_update + range_update[1]],
+            x_noba=stack_x_axis_times(raw_noba.times[start_update + range_update[0]:start_update + range_update[1]],
                                       ch_num),
-            y_pain=stack_y_axis_signals(y_noba_filted, ch_num, offset_update))
+            y_noba=stack_y_axis_signals(y_noba_filted, ch_num, offset_update))
 
         y_tick_loc = stackc_tick_loc(data_base, ch_num, offset)
         y_tick_labels = chan_base

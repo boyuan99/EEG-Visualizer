@@ -134,7 +134,7 @@ class SpectrumDF(RawDF):
 
         self.lowpass_freq = kwargs['lowpass_freq'] if 'lowpass_freq' in kwargs.keys() else None
         self.highpass_freq = kwargs['highpass_freq'] if 'highpass_freq' in kwargs.keys() else None
-        self.notch_freq = kwargs['notch_freq'] if 'notch_freq' in kwargs.keys() else 60
+        self.notch_freq = kwargs['notch_freq'] if 'notch_freq' in kwargs.keys() else None
         self.nperseg = kwargs['nperseg'] if 'nperseg' in kwargs.keys() else 5120
         self.quality_factor = kwargs['quality_factor'] if 'quality_factor' in kwargs.keys() else 30
         self.order = kwargs['order'] if 'order' in kwargs.keys() else 3
@@ -242,14 +242,34 @@ class SpectrumDF(RawDF):
 
         return dict_df_regions_signals
 
-# if __name__ == '__main__':
-#     from frequency_analysis import FrequencyAnalysis as fa
-#     import matplotlib.pyplot as plt
-#     df = RawDF(filename='E:/Subject_4_event_7_base.edf')
-#     data = df.raw.get_data()[:10]
-#     tmp = fa.butter_highpass_filter(data, 1, 1024)
-#     tmp1 = fa.notch_filter(tmp, 60, 1024)
-#     fs, den = fa.data_filted_to_den(tmp1, 2561, 1024)
+if __name__ == '__main__':
+    import yaml
+    with open("../../config.yaml", 'r') as config_file:
+        config = yaml.safe_load(config_file)
+        config_file.close()
+
+    log_policy = config['LOG']
+    lowpass_freq = config['LOWPASS']
+    highpass_freq = config['HIGHPASS']
+    notch_freq = config['NOTCH']
+    nperseg = config['NPERSEG']
+    quality_factor = config['QUALITY']
+    order = config['ORDER']
+
+    raw_edf = SpectrumDF(filename=config['FILENAME'],
+                         lowpass_freq=lowpass_freq,
+                         highpass_freq=highpass_freq,
+                         notch_freq=notch_freq,
+                         nperseg=nperseg,
+                         quality_factor=quality_factor,
+                         order=order,
+                         log=log_policy,)
+
+    fs = raw_edf.raw.info['sfreq']
+    ch_num = raw_edf.nchan
+
+    fseq = raw_edf.fseq
+    den = raw_edf.den
 
 
 
