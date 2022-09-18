@@ -1,0 +1,8 @@
+flask>=2.1.2
+bokeh>=2.4.3
+tornado>=6.1
+numpy>=1.22.4
+scipy>=1.8.1
+mne>=1.0.3
+pandas>=1.4.2
+pyyaml>=6.0
