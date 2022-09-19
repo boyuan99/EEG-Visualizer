@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
 <head>
     <style>
@@ -12,12 +13,12 @@
           display: inline;
         }
     </style>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <title>EEG Visualizer Home</title>
+    <title>Embedding a Bokeh Server With {{ framework }}</title>
 </head>
 
 <body>
@@ -27,8 +28,8 @@
           <a class="navbar-brand" href="#">EEG Visualizer</a>
         </div>
         <ul class="nav navbar-nav">
-          <li class="active"><a href="http://localhost:8000">Home</a></li>
-          <li><a href="http://localhost:8000/signal">Signal</a></li>
+          <li><a href="http://localhost:8000">Home</a></li>
+          <li class="active"><a href="http://localhost:8000/signal">Signal</a></li>
           <li><a href="http://localhost:8000/spectrum">Spectrum</a></li>
         </ul>
       </div>
@@ -41,6 +42,6 @@
         in the User's Guide.
     </div>
 
-    <img src="/static/logo.png" alt="Logo" width="50%" height="50%" />
+    {{ script|safe }}
 </body>
 </html>

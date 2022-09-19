@@ -158,7 +158,7 @@ bp = Blueprint("signal checker", __name__, url_prefix='/signal')
 @bp.route("/", methods=['GET'])
 def bkapp_page():
     script = server_document("http://localhost:5006/signal_bkapp")
-    return render_template("embed.html", script=script, template="Flask")
+    return render_template("signal.html", script=script, template="Flask")
 
 # if __name__ == "__main__":
 #     def bk_worker():
