@@ -4,13 +4,13 @@
 <head>
     <style>
         ul {
-          list-style-type: none;
-          margin: 0;
-          padding: 0;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
         }
 
         li {
-          display: inline;
+            display: inline;
         }
     </style>
     <meta charset="utf-8">
@@ -22,26 +22,27 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">EEG Visualizer</a>
+            <a class="navbar-brand" href="#">EEG Visualizer</a>
         </div>
         <ul class="nav navbar-nav">
-          <li><a href="http://localhost:8000">Home</a></li>
-          <li class="active"><a href="http://localhost:8000/signal">Signal</a></li>
-          <li><a href="http://localhost:8000/spectrum">Spectrum</a></li>
+            <li><a href="http://localhost:8000">Home</a></li>
+            <li class="active"><a href="http://localhost:8000/signal">Signal</a></li>
+            <li><a href="http://localhost:8000/spectrum">Spectrum</a></li>
+            <li><a href="http://localhost:8000/cfc">CFC</a></li>
         </ul>
-      </div>
-    </nav>
-
-    <div>
-        This Bokeh app below served by a Bokeh server that has been embedded
-        in another web app framework. For more information see the section
-        <a  target="_blank" href="https://docs.bokeh.org/en/latest/docs/user_guide/server.html#embedding-bokeh-server-as-a-library">Embedding Bokeh Server as a Library</a>
-        in the User's Guide.
     </div>
+</nav>
 
-    {{ script|safe }}
+<div>
+    This Bokeh app below served by a Bokeh server that has been embedded
+    in another web app framework. For more information see the section
+    <a  target="_blank" href="https://docs.bokeh.org/en/latest/docs/user_guide/server.html#embedding-bokeh-server-as-a-library">Embedding Bokeh Server as a Library</a>
+    in the User's Guide.
+</div>
+
+{{ script|safe }}
 </body>
 </html>

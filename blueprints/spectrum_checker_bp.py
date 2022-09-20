@@ -65,7 +65,7 @@ def spectrum_bkapp(doc):
     notch_input = TextInput(title='Notch Filter:', value='None')
     interval_input = TextInput(title='Time Interval:', value='All')
     file_input = TextInput(title='Compare File:', value='Default')
-    channel_slider = Slider(value=0, start=0, end=len(den_array), step=1, width=900, title='Channel')
+    channel_slider = Slider(value=0, start=0, end=ch_num, step=1, width=900, title='Channel')
     current_channel_name = TextInput(title='Current Channel:', value=raw_edf.ch_names[0])
 
     file_bank = dict()
@@ -108,7 +108,7 @@ def spectrum_bkapp(doc):
             y_base_filted = data_base[channel_update, interval_update[0]:interval_update[1]+1]
             y_noba_filted = data_noba[channel_update, interval_update[0]:interval_update[1]+1]
 
-        if highpass_update != 'None':
+        if highpass_update.lower() != 'none':
             try:
                 cutoff = float(highpass_update)
             except ValueError:
@@ -120,7 +120,7 @@ def spectrum_bkapp(doc):
         else:
             pass
 
-        if lowpass_update != 'None':
+        if lowpass_update.lower() != 'none':
             try:
                 cutoff = float(lowpass_update)
             except ValueError:
@@ -131,7 +131,7 @@ def spectrum_bkapp(doc):
         else:
             pass
 
-        if notch_update != 'None':
+        if notch_update.lower() != 'none':
             try:
                 cutoff = float(notch_update)
             except ValueError:
