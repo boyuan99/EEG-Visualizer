@@ -67,6 +67,7 @@ def cfc_bkapp(doc):
         a_mean[k] = np.mean(amp[indices])  # ... compute mean amplitude,
         p_mean[k] = np.mean([pL, pR])  # ... save center phase.
 
+
     source2 = ColumnDataSource(data=dict(V1=p_mean, V2=a_mean))
     p2 = figure(width=600, height=300)
     p2.line('V1', 'V2', source=source2, line_color='skyblue', line_width=2, )
@@ -164,6 +165,9 @@ def cfc_bkapp(doc):
         phi2 = np.angle(signal.hilbert(V_update2))
         amp1 = abs(signal.hilbert(V_update1))
         amp2 = abs(signal.hilbert(V_update2))
+        print(phi1)
+        print(phi2)
+        print(amp2)
 
         t_int_update = [int(time_demo_update), 2 + int(time_demo_update)]
         source1.data = dict(t=t[int(t_int_update[0] * fs):int(t_int_update[1] * fs)],
@@ -183,9 +187,10 @@ def cfc_bkapp(doc):
             a_mean1[k] = np.mean(amp1[indices1])  # ... compute mean amplitude,
             p_mean1[k] = np.mean([pL, pR])  # ... save center phase.
 
-            indices2 = (phi2 >= pL) & (phi2 < pR)  # Find phases falling in bin,
+            indices2 = (phi1 >= pL) & (phi1 < pR)  # Find phases falling in bin,
             a_mean2[k] = np.mean(amp2[indices2])  # ... compute mean amplitude,
             p_mean2[k] = np.mean([pL, pR])  # ... save center phase.
+
 
         if item_update1 == 'phase':
             source2.data['V1'] = p_mean1
