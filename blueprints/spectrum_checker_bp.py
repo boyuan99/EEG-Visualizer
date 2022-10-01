@@ -170,8 +170,11 @@ bp = Blueprint("spectrum checker", __name__, url_prefix="/spectrum")
 
 @bp.route("/", methods=["GET"])
 def bkapp_page():
+    with open("./config.yaml", 'r') as config_file:
+        config = yaml.safe_load(config_file)
+        config_file.close()
     script = server_document("http://localhost:5006/spectrum_bkapp")
-    return render_template("spectrum.html", script=script, template="Flask ")
+    return render_template("spectrum.html", script=script, template="Flask", port=config['PORT'])
 
 
 # def bk_worker():

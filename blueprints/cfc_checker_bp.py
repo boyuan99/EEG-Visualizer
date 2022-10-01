@@ -221,8 +221,11 @@ bp = Blueprint("cfc checker", __name__, url_prefix="/cfc")
 
 @bp.route("/", methods=["GET"])
 def bkapp_page():
+    with open("./config.yaml", 'r') as config_file:
+        config = yaml.safe_load(config_file)
+        config_file.close()
     script = server_document("http://localhost:5006/cfc_bkapp")
-    return render_template("cfc.html", script=script, template="Flask ")
+    return render_template("cfc.html", script=script, template="Flask", port=config['PORT'])
 
 # def bk_worker():
 #     server = Server({'/spectrum_bkapp': spectrum_bkapp}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8000"])
