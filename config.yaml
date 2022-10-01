@@ -1,20 +1,20 @@
-# Must include at least one filename
-
-FILENAME: ./Demo/S1_ictal.edf
-FILENAME_COMPARE: Null # you can input the compare file later in the app
 CHANNELS:
-  CHANNEL_POLICY: all # or "part"
-  CHANNEL_NAMES: Null # specify exact names of the channels if you choose part for the channel_policy
-
-OFFSET: 0.0002
-
-# The following items are for the spectrum visualizer
-LOG: True
-LOWPASS: Null
-HIGHPASS: Null
-NOTCH: Null
+  CHANNEL_NAMES: null
+  CHANNEL_POLICY: all
+FILENAME: ./Demo/S1_ictal.edf
+FILENAME_COMPARE: null
+HIGHPASS: null
+LOG: true
+LOWPASS: null
+NOTCH: null
 NPERSEG: 5120
-QUALITY: 30
+OFFSET: 0.0002
 ORDER: 3
-
-
+PORT: 8000
+QUALITY: 30
+WIN1:
+- 5
+- 10
+WIN2:
+- 35
+- 120
