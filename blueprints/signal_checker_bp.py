@@ -48,7 +48,7 @@ def signal_bkapp(doc):
     lowpass_input = TextInput(title='Lowpass Filter:', value='None')
     notch_input = TextInput(title='Notch Filter:', value='None')
 
-    file_input = TextInput(title='Compare File:', value='Default')
+    file_input = TextInput(title='Compare File:', value='None')
 
     file_bank = dict()
 
@@ -68,7 +68,7 @@ def signal_bkapp(doc):
         else:
             kernel = np.ones(kernel_size_update) / kernel_size_update
 
-        if file_update.lower() == "default":
+        if file_update.lower() == "none":
             raw_base = raw_edf.raw
             chan_base, data_base = raw_edf.filter_data_from_region(multi_choice_update)
             raw_noba = raw_edf.raw

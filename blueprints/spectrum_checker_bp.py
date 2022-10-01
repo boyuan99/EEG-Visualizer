@@ -64,7 +64,7 @@ def spectrum_bkapp(doc):
     lowpass_input = TextInput(title='Lowpass Filter:', value='None')
     notch_input = TextInput(title='Notch Filter:', value='None')
     interval_input = TextInput(title='Time Interval:', value='All')
-    file_input = TextInput(title='Compare File:', value='Default')
+    file_input = TextInput(title='Compare File:', value='None')
     channel_slider = Slider(value=0, start=0, end=ch_num, step=1, width=900, title='Channel')
     current_channel_name = TextInput(title='Current Channel:', value=raw_edf.ch_names[0])
 
@@ -78,7 +78,7 @@ def spectrum_bkapp(doc):
         interval_update = interval_input.value
         channel_update = channel_slider.value
 
-        if file_update.lower() == "default":
+        if file_update.lower() == "none":
             raw_base = raw_edf.raw
             data_base = raw_base.get_data()
             raw_noba = raw_edf.raw

@@ -23,12 +23,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default=8000, type=int,
                         help='Select port for you server to run on')
-    # parser.add_argument('-f', '--file', default='none', type=str,
-    #                     help='Select the base file for your server')
+    parser.add_argument('-f', '--file', default='none', type=str,
+                        help='Select the base file for your server')
 
     args = parser.parse_args()
 
     config['PORT'] = args.port
+    config['FILENAME'] = args.file if args.file.lower() != 'none' else config['FILENAME']
+
     with open("./config.yaml", 'w') as config_file:
         yaml.dump(config, config_file, default_flow_style=False)
         config_file.close()
