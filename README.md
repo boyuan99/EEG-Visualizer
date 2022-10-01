@@ -6,7 +6,7 @@
 <p align="center">
   <a href="http://docs.bokeh.org/en/latest/"><img alt="Bokeh" src="https://img.shields.io/badge/host-bokeh_server-orange.svg?style=flat-square&logo=bokeh"></a>
   <a href="https://flask.palletsprojects.com/en/2.2.x/"><img alt="Flask" src="https://img.shields.io/badge/embed-flask-red.svg?style=flat-square&logo=flask"></a>
-  <a href="https://boyuan.io/research/neural_adjuster/html/intro.html"><img alt="Online" src="https://img.shields.io/badge/book-EEG_Visualizer-green.svg?style=flat-square"></a></p>
+  <a href="https://boyuan.io/research/EEG_Visualizer/html/intro.html"><img alt="Online" src="https://img.shields.io/badge/book-EEG_Visualizer-green.svg?style=flat-square"></a></p>
 
 
 This is a EEG (especially SEEG) signal visualizer tool based on [Flask](https://flask.palletsprojects.com/en/2.2.x/) & [Bokeh Server](https://docs.bokeh.org/en/latest/docs/user_guide/server.html).
