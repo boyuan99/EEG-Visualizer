@@ -1,7 +1,4 @@
 # EEG-Visualizer
-<p align="center">
-  	<img alt="Logo image of EEGVisualizer" src="./static/logo.png" width=80%>
-</p>  
 
 <p align="center">
   <a href="http://docs.bokeh.org/en/latest/"><img alt="Bokeh" src="https://img.shields.io/badge/host-bokeh_server-orange.svg?style=flat-square&logo=bokeh"></a>
@@ -12,12 +9,6 @@
 This is a EEG (especially SEEG) signal visualizer tool based on [Flask](https://flask.palletsprojects.com/en/2.2.x/) & [Bokeh Server](https://docs.bokeh.org/en/latest/docs/user_guide/server.html).
 
 SEEG signals often have **multiple channels**, **high sampling frequencies**, and **extended recording periods**, resulting in a large computational drain on the computer. In this visualization tool, we can focus on the exact part of the signal you are observing, so that computational resources can only process that part, thus shortening the loading and processing process.
-
-- **Instruction**: https://boyuan.io/research/EEG_Visualizer/html/index.html
-- **Source**: https://github.com/boyuan99/EEG-Visualizer
-- **Bug reports**: https://github.com/boyuan99/EEG-Visualizer/issues
-
-
 
 ## Setting Up & Run
 
